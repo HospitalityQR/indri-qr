@@ -48,29 +48,29 @@ def create_luxury_burgundy_background(w, h):
     """
     Generate exact luxury gradient:
     Top: #3B0712 (59, 7, 18) deep burgundy
-    Bottom: #120607 (18, 6, 7) almost black
+    Bottom: #1A090C (26, 9, 12) dark velvet brown
     Very subtle radial glow behind logo at cx=w/2, cy=180
     """
     y, x = np.ogrid[:h, :w]
     t = (y / float(h)).astype(np.float32)[..., None]
 
-    # Gradient from Top #3B0712 to Bottom #120607
+    # Gradient from Top Deep Burgundy (#3B0712) to Bottom Dark Warm Brown (#1A090C)
     c_top = np.array([59, 7, 18], dtype=np.float32)
-    c_bot = np.array([18, 6, 7], dtype=np.float32)
+    c_bot = np.array([26, 9, 12], dtype=np.float32)
     base_grad = c_top * (1.0 - t) + c_bot * t
     img_arr = np.broadcast_to(base_grad, (h, w, 3)).copy()
 
     # Very subtle warm radial glow behind logo
     cx, cy = w / 2.0, 180.0
     dist_logo = np.sqrt((x - cx)**2 + (y - cy)**2)
-    r_glow = 360.0
+    r_glow = 400.0
     glow_mask = np.clip(1.0 - (dist_logo / r_glow), 0.0, 1.0) ** 2
-    glow_arr = np.array([28, 12, 6], dtype=np.float32)
+    glow_arr = np.array([32, 12, 10], dtype=np.float32)
     img_arr += glow_mask[..., None] * glow_arr
 
     # Subtle velvet micro-texture
     np.random.seed(42)
-    noise = np.random.normal(0, 1.4, (h, w, 1))
+    noise = np.random.normal(0, 1.2, (h, w, 1))
     img_arr = np.clip(img_arr + noise, 0, 255).astype(np.uint8)
 
     return Image.fromarray(img_arr, mode="RGB")
@@ -103,18 +103,20 @@ def get_fonts():
         instruction_font = ImageFont.truetype("arialbd.ttf", 44)
         sub_font = ImageFont.truetype("arial.ttf", 25)
         badge_font = ImageFont.truetype("arialbd.ttf", 23)
-        footer_font = ImageFont.truetype("arial.ttf", 25)
-        phone_font = ImageFont.truetype("arialbd.ttf", 28)
+        addr1_font = ImageFont.truetype("arialbd.ttf", 31)
+        addr2_font = ImageFont.truetype("arial.ttf", 27)
+        phone_font = ImageFont.truetype("arialbd.ttf", 36)
         thanks_font = ImageFont.truetype("georgiai.ttf", 34)
     except Exception:
         brand_font = ImageFont.load_default()
         instruction_font = ImageFont.load_default()
         sub_font = ImageFont.load_default()
         badge_font = ImageFont.load_default()
-        footer_font = ImageFont.load_default()
+        addr1_font = ImageFont.load_default()
+        addr2_font = ImageFont.load_default()
         phone_font = ImageFont.load_default()
         thanks_font = ImageFont.load_default()
-    return brand_font, instruction_font, sub_font, badge_font, footer_font, phone_font, thanks_font
+    return brand_font, instruction_font, sub_font, badge_font, addr1_font, addr2_font, phone_font, thanks_font
 
 def generate_all_assets():
     cfg = load_config()
@@ -202,12 +204,12 @@ def generate_single_direct_standee(qr_img, title, tagline, badge_icon, badge_tex
     standee = create_luxury_burgundy_background(w, h)
     draw = ImageDraw.Draw(standee)
 
-    # Crisp Double Gold Border (Satin Gold)
+    # Thin, subtle satin gold double border
     border_margin = 42
-    draw.rectangle([border_margin, border_margin, w - border_margin, h - border_margin], outline="#c5a034", width=3)
-    draw.rectangle([border_margin + 10, border_margin + 10, w - border_margin - 10, h - border_margin - 10], outline="#eed88c", width=1)
+    draw.rectangle([border_margin, border_margin, w - border_margin, h - border_margin], outline="#c5a034", width=2)
+    draw.rectangle([border_margin + 8, border_margin + 8, w - border_margin - 8, h - border_margin - 8], outline="#dfc476", width=1)
 
-    brand_font, instruction_font, sub_font, badge_font, footer_font, phone_font, thanks_font = get_fonts()
+    brand_font, instruction_font, sub_font, badge_font, addr1_font, addr2_font, phone_font, thanks_font = get_fonts()
 
     # Header: Logo (Prominent 250x250)
     logo_file = "logo_with_gold_rim.png" if os.path.exists("logo_with_gold_rim.png") else "logo.png"
@@ -222,51 +224,58 @@ def generate_single_direct_standee(qr_img, title, tagline, badge_icon, badge_tex
 
     # Tagline
     tb2 = draw.textbbox((0, 0), tagline, font=sub_font)
-    draw.text(((w - (tb2[2] - tb2[0])) // 2, 392), tagline, fill="#eed88c", font=sub_font)
+    draw.text(((w - (tb2[2] - tb2[0])) // 2, 390), tagline, fill="#eed88c", font=sub_font)
 
     # Instruction Title
     ib = draw.textbbox((0, 0), title, font=instruction_font)
-    draw.text(((w - (ib[2] - ib[0])) // 2, 454), title, fill="#ffffff", font=instruction_font)
+    draw.text(((w - (ib[2] - ib[0])) // 2, 445), title, fill="#ffffff", font=instruction_font)
 
     # Clean Pill Badge
     bb = draw.textbbox((0, 0), badge_text, font=badge_font)
     b_w = (bb[2] - bb[0]) + 76
     b_h = 56
     b_x = (w - b_w) // 2
-    b_y = 522
+    b_y = 510
     draw.rounded_rectangle([b_x, b_y, b_x + b_w, b_y + b_h], radius=28, fill="#2a0a12", outline="#c5a034", width=1)
     if badge_icon and os.path.exists(badge_icon):
         ico = Image.open(badge_icon).convert("RGBA").resize((34, 34), Image.Resampling.LANCZOS)
         standee.paste(ico, (b_x + 16, b_y + 11), ico)
     draw.text((b_x + 64, b_y + 14), badge_text, fill="#ffffff", font=badge_font)
 
-    # Big Direct QR Card
-    qr_card_size = 720
+    # Big Direct QR Card with approx 1 cm (~118px) white margin
+    qr_card_size = 750
     qr_card_x = (w - qr_card_size) // 2
-    qr_card_y = 615
+    qr_card_y = 580
+    margin_1cm = 118
+    qr_size = qr_card_size - 2 * margin_1cm
     draw.rounded_rectangle(
         [qr_card_x, qr_card_y, qr_card_x + qr_card_size, qr_card_y + qr_card_size],
-        radius=30, fill="#ffffff", outline="#c5a034", width=4
+        radius=32, fill="#ffffff", outline="#c5a034", width=2
     )
-    qr_resized = qr_img.resize((640, 640), Image.Resampling.LANCZOS)
-    standee.paste(qr_resized, (qr_card_x + 40, qr_card_y + 40))
+    qr_resized = qr_img.resize((qr_size, qr_size), Image.Resampling.LANCZOS)
+    standee.paste(qr_resized, (qr_card_x + margin_1cm, qr_card_y + margin_1cm))
 
-    # Bottom Address & Contact
-    loc = cfg.get("address", "Gram Pigdamber, Rau-Pithampur Bypass (AB Road), Mhow, Indore")
-    l1_b = draw.textbbox((0, 0), loc, font=footer_font)
-    draw.text(((w - (l1_b[2] - l1_b[0])) // 2, 1395), loc, fill="#cfb8bd", font=footer_font)
+    # Bottom Address & Phone (Bigger, bright, 2-line address + bold phone)
+    addr_line1 = "La Indri Cafe & Restaurant,"
+    addr_line2 = "Rau-Pithampur Bypass (AB Road), Mhow, Indore"
+    phone_text = cfg.get("phoneButtonText", "Call / Reservation: 99933 38676")
 
-    phone = cfg.get("phoneButtonText", "Call / Reservation: 99933 38676")
-    pb = draw.textbbox((0, 0), phone, font=phone_font)
-    draw.text(((w - (pb[2] - pb[0])) // 2, 1438), phone, fill="#f5dbe1", font=phone_font)
+    a1_b = draw.textbbox((0, 0), addr_line1, font=addr1_font)
+    draw.text(((w - (a1_b[2] - a1_b[0])) // 2, 1362), addr_line1, fill="#ffffff", font=addr1_font)
+
+    a2_b = draw.textbbox((0, 0), addr_line2, font=addr2_font)
+    draw.text(((w - (a2_b[2] - a2_b[0])) // 2, 1406), addr_line2, fill="#f2e2e6", font=addr2_font)
+
+    pb = draw.textbbox((0, 0), phone_text, font=phone_font)
+    draw.text(((w - (pb[2] - pb[0])) // 2, 1456), phone_text, fill="#ffffff", font=phone_font)
 
     thanks_text = "Thank You For Visiting La Indri"
     thb = draw.textbbox((0, 0), thanks_text, font=thanks_font)
     tw = thb[2] - thb[0]
     tx = (w - tw) // 2
-    draw.text((tx, 1496), thanks_text, fill="#eed88c", font=thanks_font)
-    draw_gold_sparkle(draw, tx - 24, 1512, 10, "#c5a034")
-    draw_gold_sparkle(draw, tx + tw + 24, 1512, 10, "#c5a034")
+    draw.text((tx, 1522), thanks_text, fill="#eed88c", font=thanks_font)
+    draw_gold_sparkle(draw, tx - 24, 1538, 9, "#c5a034")
+    draw_gold_sparkle(draw, tx + tw + 24, 1538, 9, "#c5a034")
 
     for fn in out_filenames:
         standee.save(fn, "PNG", dpi=(300, 300))
@@ -276,11 +285,12 @@ def generate_dual_link_standee(qr_img, cfg):
     standee = create_luxury_burgundy_background(w, h)
     draw = ImageDraw.Draw(standee)
 
+    # Thin, subtle satin gold double border
     border_margin = 42
-    draw.rectangle([border_margin, border_margin, w - border_margin, h - border_margin], outline="#c5a034", width=3)
-    draw.rectangle([border_margin + 10, border_margin + 10, w - border_margin - 10, h - border_margin - 10], outline="#eed88c", width=1)
+    draw.rectangle([border_margin, border_margin, w - border_margin, h - border_margin], outline="#c5a034", width=2)
+    draw.rectangle([border_margin + 8, border_margin + 8, w - border_margin - 8, h - border_margin - 8], outline="#dfc476", width=1)
 
-    brand_font, instruction_font, sub_font, badge_font, footer_font, phone_font, thanks_font = get_fonts()
+    brand_font, instruction_font, sub_font, badge_font, addr1_font, addr2_font, phone_font, thanks_font = get_fonts()
 
     logo_file = "logo_with_gold_rim.png" if os.path.exists("logo_with_gold_rim.png") else "logo.png"
     if os.path.exists(logo_file):
@@ -293,11 +303,11 @@ def generate_dual_link_standee(qr_img, cfg):
 
     tag_text = cfg.get("tagline", "RAU-PITHAMPUR BYPASS • MHOW • INDORE").replace("*", "•")
     tb2 = draw.textbbox((0, 0), tag_text, font=sub_font)
-    draw.text(((w - (tb2[2] - tb2[0])) // 2, 392), tag_text, fill="#eed88c", font=sub_font)
+    draw.text(((w - (tb2[2] - tb2[0])) // 2, 390), tag_text, fill="#eed88c", font=sub_font)
 
     inst_text = "SCAN TO CONNECT"
     ib = draw.textbbox((0, 0), inst_text, font=instruction_font)
-    draw.text(((w - (ib[2] - ib[0])) // 2, 454), inst_text, fill="#ffffff", font=instruction_font)
+    draw.text(((w - (ib[2] - ib[0])) // 2, 445), inst_text, fill="#ffffff", font=instruction_font)
 
     # Badges for Google and Instagram side-by-side
     g_text = "Rate Us on Google"
@@ -313,7 +323,7 @@ def generate_dual_link_standee(qr_img, cfg):
     gap = 18
     total_badges_w = g_badge_w + i_badge_w + gap
     start_badges_x = (w - total_badges_w) // 2
-    badges_y = 522
+    badges_y = 510
 
     # Badge 1: Google
     draw.rounded_rectangle(
@@ -336,33 +346,40 @@ def generate_dual_link_standee(qr_img, cfg):
         standee.paste(i_ico, (insta_x + 16, badges_y + 11), i_ico)
     draw.text((insta_x + 64, badges_y + 14), i_text, fill="#ffffff", font=badge_font)
 
-    # Main QR Card
-    qr_card_size = 720
+    # Main QR Card with approx 1 cm (~118px) white margin
+    qr_card_size = 750
     qr_card_x = (w - qr_card_size) // 2
-    qr_card_y = 615
+    qr_card_y = 580
+    margin_1cm = 118
+    qr_size = qr_card_size - 2 * margin_1cm
     draw.rounded_rectangle(
         [qr_card_x, qr_card_y, qr_card_x + qr_card_size, qr_card_y + qr_card_size],
-        radius=30, fill="#ffffff", outline="#c5a034", width=4
+        radius=32, fill="#ffffff", outline="#c5a034", width=2
     )
-    qr_resized = qr_img.resize((640, 640), Image.Resampling.LANCZOS)
-    standee.paste(qr_resized, (qr_card_x + 40, qr_card_y + 40))
+    qr_resized = qr_img.resize((qr_size, qr_size), Image.Resampling.LANCZOS)
+    standee.paste(qr_resized, (qr_card_x + margin_1cm, qr_card_y + margin_1cm))
 
-    # Bottom address/phone
-    loc = cfg.get("address", "Gram Pigdamber, Rau-Pithampur Bypass (AB Road), Mhow, Indore")
-    l1_b = draw.textbbox((0, 0), loc, font=footer_font)
-    draw.text(((w - (l1_b[2] - l1_b[0])) // 2, 1395), loc, fill="#cfb8bd", font=footer_font)
+    # Bottom Address & Phone (Bigger, bright, 2-line address + bold phone)
+    addr_line1 = "La Indri Cafe & Restaurant,"
+    addr_line2 = "Rau-Pithampur Bypass (AB Road), Mhow, Indore"
+    phone_text = cfg.get("phoneButtonText", "Call / Reservation: 99933 38676")
 
-    phone = cfg.get("phoneButtonText", "Call / Reservation: 99933 38676")
-    pb = draw.textbbox((0, 0), phone, font=phone_font)
-    draw.text(((w - (pb[2] - pb[0])) // 2, 1438), phone, fill="#f5dbe1", font=phone_font)
+    a1_b = draw.textbbox((0, 0), addr_line1, font=addr1_font)
+    draw.text(((w - (a1_b[2] - a1_b[0])) // 2, 1362), addr_line1, fill="#ffffff", font=addr1_font)
+
+    a2_b = draw.textbbox((0, 0), addr_line2, font=addr2_font)
+    draw.text(((w - (a2_b[2] - a2_b[0])) // 2, 1406), addr_line2, fill="#f2e2e6", font=addr2_font)
+
+    pb = draw.textbbox((0, 0), phone_text, font=phone_font)
+    draw.text(((w - (pb[2] - pb[0])) // 2, 1456), phone_text, fill="#ffffff", font=phone_font)
 
     thanks_text = "Thank You For Visiting La Indri"
     thb = draw.textbbox((0, 0), thanks_text, font=thanks_font)
     tw = thb[2] - thb[0]
     tx = (w - tw) // 2
-    draw.text((tx, 1496), thanks_text, fill="#eed88c", font=thanks_font)
-    draw_gold_sparkle(draw, tx - 24, 1512, 10, "#c5a034")
-    draw_gold_sparkle(draw, tx + tw + 24, 1512, 10, "#c5a034")
+    draw.text((tx, 1522), thanks_text, fill="#eed88c", font=thanks_font)
+    draw_gold_sparkle(draw, tx - 24, 1538, 9, "#c5a034")
+    draw_gold_sparkle(draw, tx + tw + 24, 1538, 9, "#c5a034")
 
     standee.save("table_standee_printable.png", "PNG", dpi=(300, 300))
     standee.save("front_page_standee.png", "PNG", dpi=(300, 300))
@@ -372,23 +389,26 @@ def generate_dual_standee_card(img_google, img_insta, cfg):
     standee = create_luxury_burgundy_background(w, h)
     draw = ImageDraw.Draw(standee)
 
-    draw.rectangle([40, 40, w - 40, h - 40], outline="#c5a034", width=3)
-    draw.rectangle([50, 50, w - 50, h - 50], outline="#eed88c", width=1)
+    # Thin, subtle satin gold double border
+    draw.rectangle([40, 40, w - 40, h - 40], outline="#c5a034", width=2)
+    draw.rectangle([48, 48, w - 48, h - 48], outline="#dfc476", width=1)
 
     try:
         title_font = ImageFont.truetype("arialbd.ttf", 60)
         sub_font = ImageFont.truetype("arial.ttf", 25)
         box_title_font = ImageFont.truetype("arialbd.ttf", 34)
         box_sub_font = ImageFont.truetype("arial.ttf", 23)
-        footer_font = ImageFont.truetype("arial.ttf", 25)
-        phone_font = ImageFont.truetype("arialbd.ttf", 28)
+        addr1_font = ImageFont.truetype("arialbd.ttf", 31)
+        addr2_font = ImageFont.truetype("arial.ttf", 27)
+        phone_font = ImageFont.truetype("arialbd.ttf", 36)
         thanks_font = ImageFont.truetype("georgiai.ttf", 34)
     except Exception:
         title_font = ImageFont.load_default()
         sub_font = ImageFont.load_default()
         box_title_font = ImageFont.load_default()
         box_sub_font = ImageFont.load_default()
-        footer_font = ImageFont.load_default()
+        addr1_font = ImageFont.load_default()
+        addr2_font = ImageFont.load_default()
         phone_font = ImageFont.load_default()
         thanks_font = ImageFont.load_default()
 
@@ -405,80 +425,87 @@ def generate_dual_standee_card(img_google, img_insta, cfg):
     sb = draw.textbbox((0, 0), sub, font=sub_font)
     draw.text(((w - (sb[2] - sb[0])) // 2, 342), sub, fill="#eed88c", font=sub_font)
 
-    card_w, card_h = 560, 840
-    y_pos = 405
+    card_w, card_h = 560, 830
+    y_pos = 400
 
     # Google Column (Left) - Lighter than background
     x_g = 105
     draw.rounded_rectangle([x_g, y_pos, x_g + card_w, y_pos + card_h], radius=24, fill="#320e17", outline="#c5a034", width=2)
     g_title = "RATE US 5-STARS"
     gt_b = draw.textbbox((0, 0), g_title, font=box_title_font)
-    draw.text((x_g + (card_w - (gt_b[2] - gt_b[0])) // 2, y_pos + 32), g_title, fill="#ffffff", font=box_title_font)
+    draw.text((x_g + (card_w - (gt_b[2] - gt_b[0])) // 2, y_pos + 30), g_title, fill="#ffffff", font=box_title_font)
     g_sub = "Google Reviews"
     gs_b = draw.textbbox((0, 0), g_sub, font=box_sub_font)
-    draw.text((x_g + (card_w - (gs_b[2] - gs_b[0])) // 2, y_pos + 78), g_sub, fill="#eed88c", font=box_sub_font)
+    draw.text((x_g + (card_w - (gs_b[2] - gs_b[0])) // 2, y_pos + 74), g_sub, fill="#eed88c", font=box_sub_font)
 
-    qr_box_size = 450
+    qr_box_size = 460
     qr_x_g = x_g + (card_w - qr_box_size) // 2
-    draw.rounded_rectangle([qr_x_g, y_pos + 130, qr_x_g + qr_box_size, y_pos + 130 + qr_box_size], radius=16, fill="#ffffff")
-    qr_g_resized = img_google.resize((410, 410), Image.Resampling.LANCZOS)
-    standee.paste(qr_g_resized, (qr_x_g + 20, y_pos + 150))
+    margin_dual = 55
+    qr_inner_dual = qr_box_size - 2 * margin_dual
+    draw.rounded_rectangle([qr_x_g, y_pos + 120, qr_x_g + qr_box_size, y_pos + 120 + qr_box_size], radius=20, fill="#ffffff", outline="#c5a034", width=2)
+    qr_g_resized = img_google.resize((qr_inner_dual, qr_inner_dual), Image.Resampling.LANCZOS)
+    standee.paste(qr_g_resized, (qr_x_g + margin_dual, y_pos + 120 + margin_dual))
 
     # Google badge pill
-    draw.rounded_rectangle([x_g + 80, y_pos + 625, x_g + card_w - 80, y_pos + 685], radius=30, fill="#22060d", outline="#c5a034", width=1)
+    draw.rounded_rectangle([x_g + 80, y_pos + 615, x_g + card_w - 80, y_pos + 675], radius=30, fill="#22060d", outline="#c5a034", width=1)
     if os.path.exists("google_icon.png"):
         g_ico = Image.open("google_icon.png").convert("RGBA").resize((32, 32), Image.Resampling.LANCZOS)
-        standee.paste(g_ico, (x_g + 95, y_pos + 644), g_ico)
+        standee.paste(g_ico, (x_g + 95, y_pos + 634), g_ico)
     g_lbl = "Google Reviews"
-    draw.text((x_g + 145, y_pos + 643), g_lbl, fill="#ffffff", font=box_sub_font)
+    draw.text((x_g + 145, y_pos + 633), g_lbl, fill="#ffffff", font=box_sub_font)
 
     g_btn = "Scan to Rate 5 Stars on Google"
     gbtn_b = draw.textbbox((0, 0), g_btn, font=box_sub_font)
-    draw.text((x_g + (card_w - (gbtn_b[2] - gbtn_b[0])) // 2, y_pos + 735), g_btn, fill="#eed88c", font=box_sub_font)
+    draw.text((x_g + (card_w - (gbtn_b[2] - gbtn_b[0])) // 2, y_pos + 725), g_btn, fill="#eed88c", font=box_sub_font)
 
     # Instagram Column (Right) - Lighter than background
     x_i = 735
     draw.rounded_rectangle([x_i, y_pos, x_i + card_w, y_pos + card_h], radius=24, fill="#320e17", outline="#c5a034", width=2)
     i_title = "FOLLOW US"
     it_b = draw.textbbox((0, 0), i_title, font=box_title_font)
-    draw.text((x_i + (card_w - (it_b[2] - it_b[0])) // 2, y_pos + 32), i_title, fill="#ffffff", font=box_title_font)
+    draw.text((x_i + (card_w - (it_b[2] - it_b[0])) // 2, y_pos + 30), i_title, fill="#ffffff", font=box_title_font)
     i_sub = cfg.get("instagramUsername", "@la_indri_restroandcafe")
     is_b = draw.textbbox((0, 0), i_sub, font=box_sub_font)
-    draw.text((x_i + (card_w - (is_b[2] - is_b[0])) // 2, y_pos + 78), i_sub, fill="#eed88c", font=box_sub_font)
+    draw.text((x_i + (card_w - (is_b[2] - is_b[0])) // 2, y_pos + 74), i_sub, fill="#eed88c", font=box_sub_font)
 
     qr_x_i = x_i + (card_w - qr_box_size) // 2
-    draw.rounded_rectangle([qr_x_i, y_pos + 130, qr_x_i + qr_box_size, y_pos + 130 + qr_box_size], radius=16, fill="#ffffff")
-    qr_i_resized = img_insta.resize((410, 410), Image.Resampling.LANCZOS)
-    standee.paste(qr_i_resized, (qr_x_i + 20, y_pos + 150))
+    draw.rounded_rectangle([qr_x_i, y_pos + 120, qr_x_i + qr_box_size, y_pos + 120 + qr_box_size], radius=20, fill="#ffffff", outline="#c5a034", width=2)
+    qr_i_resized = img_insta.resize((qr_inner_dual, qr_inner_dual), Image.Resampling.LANCZOS)
+    standee.paste(qr_i_resized, (qr_x_i + margin_dual, y_pos + 120 + margin_dual))
 
     # Instagram badge pill
-    draw.rounded_rectangle([x_i + 80, y_pos + 625, x_i + card_w - 80, y_pos + 685], radius=30, fill="#22060d", outline="#c5a034", width=1)
+    draw.rounded_rectangle([x_i + 80, y_pos + 615, x_i + card_w - 80, y_pos + 675], radius=30, fill="#22060d", outline="#c5a034", width=1)
     if os.path.exists("instagram_icon.png"):
         i_ico = Image.open("instagram_icon.png").convert("RGBA").resize((32, 32), Image.Resampling.LANCZOS)
-        standee.paste(i_ico, (x_i + 95, y_pos + 644), i_ico)
+        standee.paste(i_ico, (x_i + 95, y_pos + 634), i_ico)
     i_lbl = "Instagram Reels"
-    draw.text((x_i + 145, y_pos + 643), i_lbl, fill="#ffffff", font=box_sub_font)
+    draw.text((x_i + 145, y_pos + 633), i_lbl, fill="#ffffff", font=box_sub_font)
 
     i_btn = "Scan to Follow on Instagram"
     ibtn_b = draw.textbbox((0, 0), i_btn, font=box_sub_font)
-    draw.text((x_i + (card_w - (ibtn_b[2] - ibtn_b[0])) // 2, y_pos + 735), i_btn, fill="#eed88c", font=box_sub_font)
+    draw.text((x_i + (card_w - (ibtn_b[2] - ibtn_b[0])) // 2, y_pos + 725), i_btn, fill="#eed88c", font=box_sub_font)
 
-    # Bottom address/phone
-    loc = cfg.get("address", "Gram Pigdamber, Rau-Pithampur Bypass (AB Road), Mhow, Indore")
-    loc_b = draw.textbbox((0, 0), loc, font=footer_font)
-    draw.text(((w - (loc_b[2] - loc_b[0])) // 2, 1375), loc, fill="#cfb8bd", font=footer_font)
+    # Bottom Address & Phone (Bigger, bright, 2-line address + bold phone)
+    addr_line1 = "La Indri Cafe & Restaurant,"
+    addr_line2 = "Rau-Pithampur Bypass (AB Road), Mhow, Indore"
+    phone_text = cfg.get("phoneButtonText", "Call / Reservation: 99933 38676")
 
-    phone = cfg.get("phoneButtonText", "Call / Reservation: 99933 38676")
-    ph_b = draw.textbbox((0, 0), phone, font=phone_font)
-    draw.text(((w - (ph_b[2] - ph_b[0])) // 2, 1415), phone, fill="#ffffff", font=phone_font)
+    a1_b = draw.textbbox((0, 0), addr_line1, font=addr1_font)
+    draw.text(((w - (a1_b[2] - a1_b[0])) // 2, 1345), addr_line1, fill="#ffffff", font=addr1_font)
+
+    a2_b = draw.textbbox((0, 0), addr_line2, font=addr2_font)
+    draw.text(((w - (a2_b[2] - a2_b[0])) // 2, 1385), addr_line2, fill="#f2e2e6", font=addr2_font)
+
+    pb = draw.textbbox((0, 0), phone_text, font=phone_font)
+    draw.text(((w - (pb[2] - pb[0])) // 2, 1430), phone_text, fill="#ffffff", font=phone_font)
 
     thanks_text = "Thank You For Visiting La Indri"
     th_b = draw.textbbox((0, 0), thanks_text, font=thanks_font)
     tw = th_b[2] - th_b[0]
     tx = (w - tw) // 2
-    draw.text((tx, 1475), thanks_text, fill="#eed88c", font=thanks_font)
-    draw_gold_sparkle(draw, tx - 24, 1490, 10, "#c5a034")
-    draw_gold_sparkle(draw, tx + tw + 24, 1490, 10, "#c5a034")
+    draw.text((tx, 1492), thanks_text, fill="#eed88c", font=thanks_font)
+    draw_gold_sparkle(draw, tx - 24, 1508, 9, "#c5a034")
+    draw_gold_sparkle(draw, tx + tw + 24, 1508, 9, "#c5a034")
 
     standee.save("standee_dual_direct_static.png", "PNG", dpi=(300, 300))
 
