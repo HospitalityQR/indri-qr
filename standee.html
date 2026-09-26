@@ -124,14 +124,14 @@
             font-size: 24px;
             font-weight: 800;
             letter-spacing: 0.6px;
-            color: #ffffff;
+            color: #eed88c;
             margin-bottom: 3px;
         }
 
         .brand-sub {
             font-size: 11.5px;
             font-weight: 600;
-            color: #eed88c;
+            color: #ffffff;
             letter-spacing: 1.2px;
             text-transform: uppercase;
             margin-bottom: 6px;
@@ -215,15 +215,28 @@
 
         /* Footer */
         .footer-block {
+            width: 100%;
             margin-bottom: 2px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
+            gap: 4px;
+        }
+
+        .address-box {
+            border: 1.5px solid #c5a034;
+            border-radius: 14px;
+            padding: 9px 18px;
+            width: 92%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            margin-bottom: 5px;
         }
 
         .location-title {
-            font-size: 13.5px;
+            font-size: 13px;
             font-weight: 700;
             color: #ffffff;
             letter-spacing: 0.3px;
@@ -231,16 +244,16 @@
 
         .location-text {
             font-size: 11px;
-            color: #f2e2e6;
+            color: #ffffff;
             line-height: 1.35;
         }
 
         .phone-text {
-            font-size: 14.5px;
-            color: #ffffff;
+            font-size: 14px;
+            color: #eed88c;
             font-weight: 800;
             letter-spacing: 0.4px;
-            margin-top: 1px;
+            margin-top: 2px;
         }
 
         .footer-note {
@@ -321,9 +334,11 @@
 
         <!-- Bottom: Location, Phone & Footer -->
         <div class="footer-block">
-            <div class="location-title">La Indri Cafe & Restaurant,</div>
-            <div class="location-text" id="stAddress">Rau-Pithampur Bypass (AB Road), Mhow, Indore</div>
-            <div class="phone-text" id="stPhone">Call / Reservation: 99933 38676</div>
+            <div class="address-box">
+                <div class="location-title">La Indri Cafe & Restaurant,</div>
+                <div class="location-text" id="stAddress">Rau-Pithampur Bypass (AB Road), Mhow, Indore</div>
+                <div class="phone-text" id="stPhone">Call / Reservation: 99933 38676</div>
+            </div>
             <div class="footer-note">
                 <span class="sparkle-icon">✦</span>
                 <span id="stFooterThanks">Thank You For Visiting La Indri</span>
