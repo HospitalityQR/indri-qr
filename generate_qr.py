@@ -91,7 +91,7 @@ def make_qr_image(url, fill_color="#000000", back_color="#ffffff", box_size=20):
     qr = qrcode.QRCode(
         error_correction=qrcode.constants.ERROR_CORRECT_M,
         box_size=box_size,
-        border=4,
+        border=3,
     )
     qr.add_data(url)
     qr.make(fit=True)
@@ -242,18 +242,18 @@ def generate_single_direct_standee(qr_img, title, tagline, badge_icon, badge_tex
         standee.paste(ico, (b_x + 16, b_y + 11), ico)
     draw.text((b_x + 64, b_y + 14), badge_text, fill="#ffffff", font=badge_font)
 
-    # 7. Big Direct QR Card with approx 1 cm (~118px) white margin
-    qr_card_size = 750
+    # 7. Big Direct QR Card with balanced white quiet zone
+    qr_card_size = 700
     qr_card_x = (w - qr_card_size) // 2
-    qr_card_y = 575
-    margin_1cm = 118
-    qr_size = qr_card_size - 2 * margin_1cm
+    qr_card_y = 593
+    margin_pad = 14
+    qr_size = qr_card_size - 2 * margin_pad
     draw.rounded_rectangle(
         [qr_card_x, qr_card_y, qr_card_x + qr_card_size, qr_card_y + qr_card_size],
-        radius=32, fill="#ffffff", outline="#c5a034", width=2
+        radius=30, fill="#ffffff", outline="#c5a034", width=2
     )
     qr_resized = qr_img.resize((qr_size, qr_size), Image.Resampling.LANCZOS)
-    standee.paste(qr_resized, (qr_card_x + margin_1cm, qr_card_y + margin_1cm))
+    standee.paste(qr_resized, (qr_card_x + margin_pad, qr_card_y + margin_pad))
 
     # 8. Address + Phone Framed in Thin Gold Box (as in reference image)
     box_w = 980
@@ -362,18 +362,18 @@ def generate_dual_link_standee(qr_img, cfg):
         standee.paste(i_ico, (insta_x + 16, badges_y + 11), i_ico)
     draw.text((insta_x + 64, badges_y + 14), i_text, fill="#ffffff", font=badge_font)
 
-    # 7. Main QR Card with approx 1 cm (~118px) white margin
-    qr_card_size = 750
+    # 7. Main QR Card with balanced white quiet zone
+    qr_card_size = 700
     qr_card_x = (w - qr_card_size) // 2
-    qr_card_y = 575
-    margin_1cm = 118
-    qr_size = qr_card_size - 2 * margin_1cm
+    qr_card_y = 593
+    margin_pad = 14
+    qr_size = qr_card_size - 2 * margin_pad
     draw.rounded_rectangle(
         [qr_card_x, qr_card_y, qr_card_x + qr_card_size, qr_card_y + qr_card_size],
-        radius=32, fill="#ffffff", outline="#c5a034", width=2
+        radius=30, fill="#ffffff", outline="#c5a034", width=2
     )
     qr_resized = qr_img.resize((qr_size, qr_size), Image.Resampling.LANCZOS)
-    standee.paste(qr_resized, (qr_card_x + margin_1cm, qr_card_y + margin_1cm))
+    standee.paste(qr_resized, (qr_card_x + margin_pad, qr_card_y + margin_pad))
 
     # 8. Address + Phone Framed in Thin Gold Box (as in reference image)
     box_w = 980
@@ -466,13 +466,13 @@ def generate_dual_standee_card(img_google, img_insta, cfg):
     gs_b = draw.textbbox((0, 0), g_sub, font=box_sub_font)
     draw.text((x_g + (card_w - (gs_b[2] - gs_b[0])) // 2, y_pos + 74), g_sub, fill="#eed88c", font=box_sub_font)
 
-    qr_box_size = 460
+    qr_box_size = 450
     qr_x_g = x_g + (card_w - qr_box_size) // 2
-    margin_dual = 55
+    margin_dual = 16
     qr_inner_dual = qr_box_size - 2 * margin_dual
-    draw.rounded_rectangle([qr_x_g, y_pos + 120, qr_x_g + qr_box_size, y_pos + 120 + qr_box_size], radius=20, fill="#ffffff", outline="#c5a034", width=2)
+    draw.rounded_rectangle([qr_x_g, y_pos + 125, qr_x_g + qr_box_size, y_pos + 125 + qr_box_size], radius=20, fill="#ffffff", outline="#c5a034", width=2)
     qr_g_resized = img_google.resize((qr_inner_dual, qr_inner_dual), Image.Resampling.LANCZOS)
-    standee.paste(qr_g_resized, (qr_x_g + margin_dual, y_pos + 120 + margin_dual))
+    standee.paste(qr_g_resized, (qr_x_g + margin_dual, y_pos + 125 + margin_dual))
 
     # Google badge pill
     draw.rounded_rectangle([x_g + 80, y_pos + 615, x_g + card_w - 80, y_pos + 675], radius=30, fill="#22060d", outline="#c5a034", width=1)
@@ -497,12 +497,12 @@ def generate_dual_standee_card(img_google, img_insta, cfg):
     draw.text((x_i + (card_w - (is_b[2] - is_b[0])) // 2, y_pos + 74), i_sub, fill="#eed88c", font=box_sub_font)
 
     qr_x_i = x_i + (card_w - qr_box_size) // 2
-    draw.rounded_rectangle([qr_x_i, y_pos + 120, qr_x_i + qr_box_size, y_pos + 120 + qr_box_size], radius=20, fill="#ffffff", outline="#c5a034", width=2)
+    draw.rounded_rectangle([qr_x_i, y_pos + 125, qr_x_i + qr_box_size, y_pos + 125 + qr_box_size], radius=20, fill="#ffffff", outline="#c5a034", width=2)
     qr_i_resized = img_insta.resize((qr_inner_dual, qr_inner_dual), Image.Resampling.LANCZOS)
-    standee.paste(qr_i_resized, (qr_x_i + margin_dual, y_pos + 120 + margin_dual))
+    standee.paste(qr_i_resized, (qr_x_i + margin_dual, y_pos + 125 + margin_dual))
 
     # Instagram badge pill
-    draw.rounded_rectangle([x_i + 80, y_pos + 615, x_i + card_w - 80, y_pos + 685], radius=30, fill="#22060d", outline="#c5a034", width=1)
+    draw.rounded_rectangle([x_i + 80, y_pos + 615, x_i + card_w - 80, y_pos + 675], radius=30, fill="#22060d", outline="#c5a034", width=1)
     if os.path.exists("instagram_icon.png"):
         i_ico = Image.open("instagram_icon.png").convert("RGBA").resize((32, 32), Image.Resampling.LANCZOS)
         standee.paste(i_ico, (x_i + 95, y_pos + 634), i_ico)
