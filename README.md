@@ -75,7 +75,7 @@ Agar aapko Google link, Instagram link, phone number ya address change karna ho:
 
 ## 🔗 Configured Details for La Indri:
 - **Restaurant Name:** La Indri Cafe & Restaurant
-- **Tagline:** A Symphony of Flavours • Cafe & Restaurant
+- **Tagline:** Rau-Pithampur Bypass • Mhow • Indore
 - **Google Review Link:** `https://share.google/MbI90MD7WSUXWWWM7`
 - **Instagram Link:** `https://www.instagram.com/la_indri_restroandcafe?stkn=a29ra3VqeTJyc2dz`
 - **Instagram Handle:** `@la_indri_restroandcafe`

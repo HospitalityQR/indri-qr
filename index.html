@@ -19,19 +19,18 @@
 
     <style>
         :root {
-            --bg-gradient-start: #34060e;
-            --bg-gradient-mid: #180206;
-            --bg-gradient-end: #080002;
-            --gold-primary: #d4af37;
-            --gold-light: #fbe69b;
-            --gold-dark: #9e7817;
-            --gold-gradient: linear-gradient(135deg, #fbe69b 0%, #d4af37 50%, #9e7817 100%);
-            --card-bg: rgba(255, 255, 255, 0.045);
-            --card-border: rgba(212, 175, 55, 0.28);
-            --card-border-hover: rgba(212, 175, 55, 0.65);
+            --bg-top: #3B0712;
+            --bg-bottom: #120607;
+            --gold-primary: #c5a034;
+            --gold-light: #eed88c;
+            --gold-dark: #8c6614;
+            --gold-gradient: linear-gradient(135deg, #eed88c 0%, #c5a034 50%, #8c6614 100%);
+            --card-bg: rgba(255, 255, 255, 0.075);
+            --card-border: rgba(197, 160, 52, 0.26);
+            --card-border-hover: rgba(197, 160, 52, 0.55);
             --text-primary: #ffffff;
-            --text-secondary: #f3d7dc;
-            --text-muted: #bda2a7;
+            --text-secondary: #f0d5da;
+            --text-muted: #b89fa4;
         }
 
         * {
@@ -43,7 +42,7 @@
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at 50% 20%, #34060e 0%, #1a0206 52%, #080002 100%);
+            background: linear-gradient(180deg, #3B0712 0%, #20070c 48%, #120607 100%);
             color: var(--text-primary);
             min-height: 100vh;
             display: flex;
@@ -55,16 +54,16 @@
             overflow-x: hidden;
         }
 
-        /* Ambient luxury glow background */
+        /* Very subtle ambient radial glow behind logo */
         body::before {
             content: '';
             position: fixed;
-            top: -10%;
+            top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 520px;
-            height: 520px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.16) 0%, rgba(178, 30, 39, 0.1) 48%, transparent 75%);
+            width: 500px;
+            height: 420px;
+            background: radial-gradient(circle at 50% 32%, rgba(197, 160, 52, 0.09) 0%, rgba(59, 7, 18, 0.08) 55%, transparent 75%);
             z-index: 0;
             pointer-events: none;
         }
@@ -76,8 +75,8 @@
             left: 50%;
             transform: translateX(-50%);
             width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(120, 18, 30, 0.25) 0%, transparent 70%);
+            height: 450px;
+            background: radial-gradient(circle, rgba(18, 6, 7, 0.4) 0%, transparent 70%);
             z-index: 0;
             pointer-events: none;
         }
@@ -524,7 +523,7 @@
 
             <div class="tagline-badge" id="uiTagline">
                 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                <span id="uiTaglineText">A Symphony of Flavours • Cafe & Restaurant</span>
+                <span id="uiTaglineText">Cafe & Restaurant</span>
             </div>
         </header>
 

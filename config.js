@@ -10,7 +10,7 @@ var RESTAURANT_CONFIG = {
     restaurantId: "la-indri",
     restaurantName: "La Indri",
     subtitle: "Cafe & Restaurant",
-    tagline: "A Symphony of Flavours • Cafe & Restaurant",
+    tagline: "Rau-Pithampur Bypass • Mhow • Indore",
     logoImage: "logo_with_gold_rim.png",
     cleanLogoImage: "logo.png",
 
