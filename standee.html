@@ -398,6 +398,19 @@
         if (typeof RESTAURANT_CONFIG !== 'undefined') {
             applyStandeeConfig(RESTAURANT_CONFIG);
         }
+
+        // Bypass mobile browser cache when hosted online
+        if (window.location.protocol.startsWith('http')) {
+            const url = 'config.js?t=' + Date.now();
+            fetch(url, { cache: 'no-store' })
+                .then(res => { if (res.ok) return res.text(); throw new Error('Not found'); })
+                .then(text => {
+                    const fn = new Function(text + '\nreturn (typeof RESTAURANT_CONFIG !== "undefined") ? RESTAURANT_CONFIG : null;');
+                    const cfg = fn();
+                    if (cfg) applyStandeeConfig(cfg);
+                })
+                .catch(() => {});
+        }
     </script>
 </body>
 </html>
