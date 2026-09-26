@@ -27,13 +27,13 @@ var RESTAURANT_CONFIG = {
     // 4. Google Review Link & Luxury Text
     googleReviewLink: "https://share.google/MbI90MD7WSUXWWWM7",
     googleRatingText: "Rate Us on Google",
-    googleRatingSubtext: "Share your 5-Star experience on Google",
+    googleRatingSubtext: "Share your experience on Google",
 
     // 5. Instagram Link & Profile Handle
     instagramLink: "https://www.instagram.com/la_indri_restroandcafe?stkn=a29ra3VqeTJyc2dz",
     instagramUsername: "@la_indri_restroandcafe",
     instagramActionText: "Follow Us on Instagram",
-    instagramSubtext: "@la_indri_restroandcafe • Food, Vibe & Reels",
+    instagramSubtext: "@la_indri_restroandcafe \n• Food, Vibe & Reels",
 
     // 6. Contact & Location Details
     phoneNumber: "9993338676",
