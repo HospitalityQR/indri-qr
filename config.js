@@ -32,7 +32,7 @@ var RESTAURANT_CONFIG = {
     // 5. Instagram Link & Profile Handle
     instagramLink: "https://www.instagram.com/la_indri_restroandcafe?stkn=a29ra3VqeTJyc2dz",
     instagramUsername: "@la_indri_restroandcafe",
-    instagramActionText: "Follow Us on Instagram",
+    instagramActionText: "Follow Us on Instagram naman garg",
     instagramSubtext: "@la_indri_restroandcafe \n• Food, Vibe & Reels",
 
     // 6. Contact & Location Details
